@@ -18,6 +18,12 @@
       </v-card>
     </v-dialog>
 
+    <!-- Filter Controls -->
+    <div class="filter-controls">
+      <v-text-field v-model="filterName" label="Filter by Name" @input="applyFilters"></v-text-field>
+      <v-text-field v-model="filterCpf" label="Filter by CPF" @input="applyFilters"></v-text-field>
+    </div>
+
     <!-- Data Table -->
     <table class="data-table">
       <thead>
@@ -30,7 +36,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(person, index) in people" :key="person.id">
+        <tr v-for="(person, index) in filteredPeople" :key="person.id">
           <td>{{ person.id }}</td>
           <td>{{ person.nome }}</td>
           <td>{{ person.cpf }}</td>
@@ -74,12 +80,11 @@
 </template>
 
 <script>
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, computed } from "vue";
 import peopleApi from "@/server/api";
 
 export default defineComponent({
   name: "addPeople",
-
   setup() {
     // Data
     const people = ref([]);
@@ -147,28 +152,25 @@ export default defineComponent({
       showEditForm.value = true;
     };
 
-  // Update a person
-const updateItem = async () => {
-  try {
-    const response = await peopleApi.put(`/${editedItem.value.id}`, editedItem.value);
+    // Update a person
+    const updateItem = async () => {
+      try {
+        const response = await peopleApi.put(`/${editedItem.value.id}`, editedItem.value);
 
-    if (response.status === 200) {
-      // Find the index of the edited item in the people array
-      const index = people.value.findIndex((person) => person.id === editedItem.value.id);
+        if (response.status === 200) {
+          const index = people.value.findIndex((person) => person.id === editedItem.value.id);
 
-      if (index !== -1) {
-        // Update the item in the people array
-        people.value[index] = { ...editedItem.value };
-        showEditForm.value = false;
+          if (index !== -1) {
+            people.value[index] = { ...editedItem.value };
+            showEditForm.value = false;
+          }
+        }
+
+        fetchPeople();
+      } catch (error) {
+        console.error("Error updating person:", error);
       }
-    }
-
-    fetchPeople();
-
-  } catch (error) {
-    console.error("Error updating person:", error);
-  }
-};
+    };
 
     // Cancel the edit operation
     const cancelEdit = () => {
@@ -196,7 +198,6 @@ const updateItem = async () => {
           if (response.status === 204) {
             const index = people.value.findIndex((person) => person.id === itemToDeleteId.value);
             if (index !== -1) {
-              // Remove the deleted item from the people array
               people.value.splice(index, 1);
             }
           }
@@ -207,6 +208,35 @@ const updateItem = async () => {
           console.error("Error deleting person:", error);
         }
       }
+    };
+
+    // Filtering
+    const filterName = ref("");
+    const filterCpf = ref("");
+
+    const filteredPeople = computed(() => {
+      let filtered = [...people.value];
+
+      if (filterName.value) {
+        const keyword = filterName.value.toLowerCase();
+        filtered = filtered.filter((person) =>
+          person.nome.toLowerCase().includes(keyword)
+        );
+      }
+
+      if (filterCpf.value) {
+        const keyword = filterCpf.value.toLowerCase();
+        filtered = filtered.filter((person) =>
+          person.cpf.toLowerCase().includes(keyword)
+        );
+      }
+
+      return filtered;
+    });
+
+    const applyFilters = () => {
+      // Triggered when the filter fields change
+      // Update the filteredPeople computed property
     };
 
     // Fetch data on component mount
@@ -221,6 +251,10 @@ const updateItem = async () => {
       cpf,
       dataNascimento,
       editedItem,
+      itemToDeleteId,
+      filterName,
+      filterCpf,
+      filteredPeople,
       openAddDialog,
       closeAddDialog,
       register,
@@ -230,6 +264,7 @@ const updateItem = async () => {
       deleteItem,
       cancelAction,
       executeAction,
+      applyFilters,
     };
   },
 });
