@@ -147,11 +147,28 @@ export default defineComponent({
       showEditForm.value = true;
     };
 
-    // Update a person
-    const updateItem = () => {
-      showEditForm.value = false;
-      // Implement the logic to update a person here
-    };
+  // Update a person
+const updateItem = async () => {
+  try {
+    const response = await peopleApi.put(`/${editedItem.value.id}`, editedItem.value);
+
+    if (response.status === 200) {
+      // Find the index of the edited item in the people array
+      const index = people.value.findIndex((person) => person.id === editedItem.value.id);
+
+      if (index !== -1) {
+        // Update the item in the people array
+        people.value[index] = { ...editedItem.value };
+        showEditForm.value = false;
+      }
+    }
+
+    fetchPeople();
+
+  } catch (error) {
+    console.error("Error updating person:", error);
+  }
+};
 
     // Cancel the edit operation
     const cancelEdit = () => {
@@ -181,7 +198,6 @@ export default defineComponent({
             if (index !== -1) {
               // Remove the deleted item from the people array
               people.value.splice(index, 1);
-
             }
           }
           fetchPeople();
