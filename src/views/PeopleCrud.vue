@@ -1,11 +1,21 @@
 <template>
   <div class="data-table-container">
-     <!-- filter -->
-     <div class="filter-controls">
-      <v-text-field v-model="filterName" label="Proucurar por Nome" @input="applyFilters"></v-text-field>
-      <v-text-field v-model="filterCpf" label="Proucurar por CPF" @input="applyFilters"></v-text-field>
+    <!-- filter -->
+    <div class="filter-controls">
+      <v-text-field
+        v-model="filterName"
+        label="Proucurar por Nome"
+        @input="applyFilters"
+      ></v-text-field>
+      <v-text-field
+        v-model="filterCpf"
+        label="Proucurar por CPF"
+        @input="applyFilters"
+      ></v-text-field>
     </div>
-    <v-btn  @click="openAddDialog" class="mb-2 tableBtn">Adicionar Usuário</v-btn>
+    <v-btn @click="openAddDialog" class="mb-2 tableBtn"
+      >Adicionar Usuário</v-btn
+    >
 
     <!-- Add Data Dialog -->
     <v-dialog v-model="dialogAddData" max-width="400">
@@ -13,19 +23,19 @@
         <v-card-title>Adicionar Detalhes</v-card-title>
         <v-card-text>
           <v-text-field v-model="name" label="Nome"></v-text-field>
-          <v-text-field v-model="cpf" label="Cpf"></v-text-field>
-          <v-text-field v-model="dataNascimento" label="Data de Nascimento"></v-text-field>
+          <v-text-field v-model="cpf" label="Cpf" maxlength="14"></v-text-field>
+          <v-text-field
+            placeholder="dd/mm/yyyy"
+            v-model="dataNascimento"
+            label="Data de Nascimento"
+          />
         </v-card-text>
         <v-card-actions class="mt-n5 border border-black">
-
           <v-btn class="tableBtn" @click="register">Salvar</v-btn>
-          <v-btn class="tableBtn " @click="closeAddDialog">Cancelar</v-btn>
-
+          <v-btn class="tableBtn" @click="closeAddDialog">Cancelar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-
 
     <!-- table -->
     <table class="data-table">
@@ -45,10 +55,10 @@
           <td>{{ person.cpf }}</td>
           <td>{{ person.dataNascimento }}</td>
           <td class="separate">
-
             <v-btn class="tableBtn" @click="editItem(index)">EDITAR</v-btn>
-            <v-btn class="tableBtn" @click="deleteItem(person.id)">DELETAR</v-btn>
-
+            <v-btn class="tableBtn" @click="deleteItem(person.id)"
+              >DELETAR</v-btn
+            >
           </td>
         </tr>
       </tbody>
@@ -61,7 +71,10 @@
         <v-card-text>
           <v-text-field v-model="editedItem.nome" label="Name"></v-text-field>
           <v-text-field v-model="editedItem.cpf" label="Cpf"></v-text-field>
-          <v-text-field v-model="editedItem.dataNascimento" label="Data de Nascimento"></v-text-field>
+          <v-text-field
+            v-model="editedItem.dataNascimento"
+            label="Data de Nascimento"
+          ></v-text-field>
         </v-card-text>
         <v-card-actions class="ml-3 mt-n5">
           <v-btn class="tableBtn" @click="updateItem">Editar</v-btn>
@@ -74,7 +87,9 @@
     <v-dialog v-model="dialogVisible" max-width="400">
       <v-card>
         <v-card-title class="headline">Confirmar Ação</v-card-title>
-        <v-card-text>Você tem certeza que deseja deletar o usuário?</v-card-text>
+        <v-card-text
+          >Você tem certeza que deseja deletar o usuário?</v-card-text
+        >
         <v-card-actions>
           <v-btn class="tableBtn" text @click="cancelAction">Cancelar</v-btn>
           <v-btn class="tableBtn" text @click="executeAction">Confirmar</v-btn>
@@ -85,11 +100,13 @@
 </template>
 
 <script>
-import { defineComponent, onMounted, ref, computed } from "vue";
+import { defineComponent, onMounted, ref, computed, watchEffect } from "vue";
+
 import peopleApi from "@/server/api";
 
 export default defineComponent({
   name: "addPeople",
+
   setup() {
     // Data
     const people = ref([]);
@@ -117,6 +134,42 @@ export default defineComponent({
       }
     };
 
+    function isValidCPF(cpf) {
+      cpf = cpf.replace(/[^\d]+/g, "");
+
+      if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+      let sum = 0;
+      let remainder;
+
+      for (let i = 1; i <= 9; i++) {
+        sum += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+      }
+
+      remainder = (sum * 10) % 11;
+
+      if (remainder === 10 || remainder === 11) {
+        remainder = 0;
+      }
+
+      if (remainder !== parseInt(cpf.substring(9, 10))) return false;
+
+      sum = 0;
+      for (let i = 1; i <= 10; i++) {
+        sum += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+      }
+
+      remainder = (sum * 10) % 11;
+
+      if (remainder === 10 || remainder === 11) {
+        remainder = 0;
+      }
+
+      if (remainder !== parseInt(cpf.substring(10, 11))) return false;
+
+      return true;
+    }
+
     // Add a new person
     const register = async () => {
       try {
@@ -127,7 +180,14 @@ export default defineComponent({
           dataNascimento: dataNascimento.value,
         };
 
+        if (isValidCPF(newPerson.cpf)) {
+          console.log(`${newPerson.cpf} é um CPF válido.`);
+        } else {
+          console.log(`${newPerson.cpf} é um CPF inválido.`);
+        }
+
         const response = await peopleApi.post("/", newPerson);
+        console.log(newPerson);
 
         if (response.status === 201) {
           people.value.push(newPerson);
@@ -160,10 +220,15 @@ export default defineComponent({
     // Update a person
     const updateItem = async () => {
       try {
-        const response = await peopleApi.put(`/${editedItem.value.id}`, editedItem.value);
+        const response = await peopleApi.put(
+          `/${editedItem.value.id}`,
+          editedItem.value
+        );
 
         if (response.status === 200) {
-          const index = people.value.findIndex((person) => person.id === editedItem.value.id);
+          const index = people.value.findIndex(
+            (person) => person.id === editedItem.value.id
+          );
 
           if (index !== -1) {
             people.value[index] = { ...editedItem.value };
@@ -201,7 +266,9 @@ export default defineComponent({
           const response = await peopleApi.delete(`/${itemToDeleteId.value}`);
 
           if (response.status === 204) {
-            const index = people.value.findIndex((person) => person.id === itemToDeleteId.value);
+            const index = people.value.findIndex(
+              (person) => person.id === itemToDeleteId.value
+            );
             if (index !== -1) {
               people.value.splice(index, 1);
             }
@@ -243,6 +310,16 @@ export default defineComponent({
       // Triggered when the filter fields change
       // Update the filteredPeople computed property
     };
+    watchEffect(() => {
+      const cleanedCpf = cpf.value.replace(/\D/g, "");
+
+      const formattedCpf = `${cleanedCpf.slice(0, 3)}.${cleanedCpf.slice(
+        3,
+        6
+      )}.${cleanedCpf.slice(6, 9)}-${cleanedCpf.slice(9, 11)}`;
+
+      cpf.value = formattedCpf;
+    });
 
     // Fetch data on component mount
     onMounted(fetchPeople);
@@ -275,35 +352,29 @@ export default defineComponent({
 });
 </script>
 
-
-
 <style lang="scss" scoped>
- @import "../scss/app.scss";
+@import "../scss/app.scss";
 .data-table-container {
   padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-
-
 }
 
-.separate{
-  display:flex;
-  gap:1rem;
-
+.separate {
+  display: flex;
+  gap: 1rem;
 }
 
 /* Style the "ADD DATA" button */
 .tableBtn {
   background-color: $backgroundBlack;
-  color:$TextColor;
+  color: $TextColor;
 
   &:hover {
     background-color: $backgroundYellow;
     transition-duration: 0.5s;
   }
-
 }
 
 /* Style the Add Data Dialog */
@@ -313,7 +384,7 @@ export default defineComponent({
 
 /* Style the Filter Controls */
 .filter-controls {
-  gap:1rem;
+  gap: 1rem;
   width: 45rem;
   display: flex;
   justify-content: space-between;
@@ -330,7 +401,7 @@ export default defineComponent({
 
 .data-table th {
   background-color: $backgroundBlack;
-  color:$TextColor;
+  color: $TextColor;
   font-weight: bold;
   text-align: left;
   padding: 10px;
@@ -376,11 +447,9 @@ export default defineComponent({
     font-size: 12px;
   }
 
-
-  .separate{
-  display:flex;
-  flex-direction: column;
-}
-
+  .separate {
+    display: flex;
+    flex-direction: column;
+  }
 }
 </style>
