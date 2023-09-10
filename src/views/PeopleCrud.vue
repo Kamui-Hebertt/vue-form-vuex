@@ -1,38 +1,41 @@
 <template>
   <div class="data-table-container">
-    <v-btn @click="openAddDialog" class="mt-3" color="blue">ADD DATA</v-btn>
+     <!-- filter -->
+     <div class="filter-controls">
+      <v-text-field v-model="filterName" label="Proucurar por Nome" @input="applyFilters"></v-text-field>
+      <v-text-field v-model="filterCpf" label="Proucurar por CPF" @input="applyFilters"></v-text-field>
+    </div>
+    <v-btn  @click="openAddDialog" class="mb-2 tableBtn">Adicionar Usuário</v-btn>
 
     <!-- Add Data Dialog -->
     <v-dialog v-model="dialogAddData" max-width="400">
       <v-card>
-        <v-card-title>ADD Details</v-card-title>
+        <v-card-title>Adicionar Detalhes</v-card-title>
         <v-card-text>
-          <v-text-field v-model="name" label="Name"></v-text-field>
+          <v-text-field v-model="name" label="Nome"></v-text-field>
           <v-text-field v-model="cpf" label="Cpf"></v-text-field>
           <v-text-field v-model="dataNascimento" label="Data de Nascimento"></v-text-field>
         </v-card-text>
-        <v-card-actions class="mt-n5">
-          <v-btn color="primary" @click="register">Save</v-btn>
-          <v-btn @click="closeAddDialog">Cancel</v-btn>
+        <v-card-actions class="mt-n5 border border-black">
+
+          <v-btn class="tableBtn" @click="register">Salvar</v-btn>
+          <v-btn class="tableBtn " @click="closeAddDialog">Cancelar</v-btn>
+
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <!-- Filter Controls -->
-    <div class="filter-controls">
-      <v-text-field v-model="filterName" label="Filter by Name" @input="applyFilters"></v-text-field>
-      <v-text-field v-model="filterCpf" label="Filter by CPF" @input="applyFilters"></v-text-field>
-    </div>
 
-    <!-- Data Table -->
+
+    <!-- table -->
     <table class="data-table">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Name</th>
+          <th>Nome</th>
           <th>Cpf</th>
           <th>Data de Nascimento</th>
-          <th>Action</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -41,9 +44,11 @@
           <td>{{ person.nome }}</td>
           <td>{{ person.cpf }}</td>
           <td>{{ person.dataNascimento }}</td>
-          <td>
-            <v-btn color="green" @click="editItem(index)">EDIT</v-btn>
-            <v-btn color="red" @click="deleteItem(person.id)">DELETE</v-btn>
+          <td class="separate">
+
+            <v-btn class="tableBtn" @click="editItem(index)">EDITAR</v-btn>
+            <v-btn class="tableBtn" @click="deleteItem(person.id)">DELETAR</v-btn>
+
           </td>
         </tr>
       </tbody>
@@ -52,15 +57,15 @@
     <!-- Edit Data Dialog -->
     <v-dialog v-model="showEditForm" max-width="400">
       <v-card>
-        <v-card-title>Edit Details</v-card-title>
+        <v-card-title>Editar Detalhes</v-card-title>
         <v-card-text>
           <v-text-field v-model="editedItem.nome" label="Name"></v-text-field>
           <v-text-field v-model="editedItem.cpf" label="Cpf"></v-text-field>
           <v-text-field v-model="editedItem.dataNascimento" label="Data de Nascimento"></v-text-field>
         </v-card-text>
         <v-card-actions class="ml-3 mt-n5">
-          <v-btn color="primary" @click="updateItem">Update</v-btn>
-          <v-btn @click="cancelEdit">Cancel</v-btn>
+          <v-btn class="tableBtn" @click="updateItem">Editar</v-btn>
+          <v-btn class="tableBtn" @click="cancelEdit">Cancelar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -68,11 +73,11 @@
     <!-- Confirmation Dialog -->
     <v-dialog v-model="dialogVisible" max-width="400">
       <v-card>
-        <v-card-title class="headline">Confirm Action</v-card-title>
-        <v-card-text>Are you sure you want to delete the item and fetch users?</v-card-text>
+        <v-card-title class="headline">Confirmar Ação</v-card-title>
+        <v-card-text>Você tem certeza que deseja deletar o usuário?</v-card-text>
         <v-card-actions>
-          <v-btn color="red" text @click="cancelAction">No</v-btn>
-          <v-btn color="green" text @click="executeAction">Yes</v-btn>
+          <v-btn class="tableBtn" text @click="cancelAction">Cancelar</v-btn>
+          <v-btn class="tableBtn" text @click="executeAction">Confirmar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -269,3 +274,113 @@ export default defineComponent({
   },
 });
 </script>
+
+
+
+<style lang="scss" scoped>
+ @import "../scss/app.scss";
+.data-table-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+
+}
+
+.separate{
+  display:flex;
+  gap:1rem;
+
+}
+
+/* Style the "ADD DATA" button */
+.tableBtn {
+  background-color: $backgroundBlack;
+  color:$TextColor;
+
+  &:hover {
+    background-color: $backgroundYellow;
+    transition-duration: 0.5s;
+  }
+
+}
+
+/* Style the Add Data Dialog */
+.v-dialog {
+  border-radius: 8px;
+}
+
+/* Style the Filter Controls */
+.filter-controls {
+  gap:1rem;
+  width: 45rem;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+/* Style the Data Table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: $TextColor;
+}
+
+.data-table th {
+  background-color: $backgroundBlack;
+  color:$TextColor;
+  font-weight: bold;
+  text-align: left;
+  padding: 10px;
+}
+
+.data-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
+
+.data-table tbody tr:hover {
+  background-color: #f2f2f2;
+}
+
+/* Style the Edit Data Dialog */
+.v-dialog.edit-dialog {
+  border-radius: 8px;
+}
+
+/* Style the Confirmation Dialog */
+.v-dialog.confirm-dialog {
+  border-radius: 8px;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+  .data-table-container {
+    padding: 10px;
+  }
+
+  .filter-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filter-controls .v-text-field {
+    width: 100%;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 5px;
+    font-size: 12px;
+  }
+
+
+  .separate{
+  display:flex;
+  flex-direction: column;
+}
+
+}
+</style>

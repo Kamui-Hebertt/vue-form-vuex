@@ -15,20 +15,14 @@
     {
       "id": 3,
       "nome": "dasda",
-      "cpf": "sdasda",
-      "dataNascimento": "sdasd"
+      "cpf": "dasdasd",
+      "dataNascimento": "aas"
     },
     {
       "id": 4,
-      "nome": "asdasd",
-      "cpf": "asd",
-      "dataNascimento": "asda"
-    },
-    {
-      "id": 5,
-      "nome": "da",
-      "cpf": "asdadasd",
-      "dataNascimento": "asdasd"
+      "nome": "fsdfdsf",
+      "cpf": "dasdasd",
+      "dataNascimento": "sfsdfsd"
     }
   ],
   "produtos": [

@@ -17,22 +17,17 @@ const routes = [
     ],
   },
 
-  
-  {
-    path: '/Crud',
-    name: 'Crud',
-    component: () => import('@/views/Crud.vue')
-  },
 
   {
-    path: '/walup',
-    name: 'walup',
-    component: () => import('@/views/walup.vue')
+    path: '/people',
+    name: 'people',
+    component: () => import('@/views/PeopleCrud.vue')
   },
 
 
 
-  
+
+
 ]
 
 const router = createRouter({
