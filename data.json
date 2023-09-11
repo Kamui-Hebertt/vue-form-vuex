@@ -8,15 +8,9 @@
     },
     {
       "id": 2,
-      "nome": "dasdada",
+      "nome": "asdasda",
       "cpf": "173.626.717-50",
       "dataNascimento": "dsadsad"
-    },
-    {
-      "id": 3,
-      "nome": "sadasd",
-      "cpf": "173.626.717-50",
-      "dataNascimento": "dasdasd"
     },
     {
       "id": 4,
@@ -32,21 +26,9 @@
     },
     {
       "id": 6,
-      "nome": "dasdad",
+      "nome": "dasd",
       "cpf": "173.626.717-50",
-      "dataNascimento": ""
-    },
-    {
-      "id": 7,
-      "nome": "dasdas",
-      "cpf": "173.626.717-50",
-      "dataNascimento": "dsada"
-    },
-    {
-      "id": 8,
-      "nome": "asdad",
-      "cpf": "173.626.717-50",
-      "dataNascimento": "dasdasd"
+      "dataNascimento": "dasd"
     }
   ],
   "produtos": [

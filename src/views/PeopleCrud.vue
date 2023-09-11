@@ -499,9 +499,10 @@ export default defineComponent({
   .filter-controls {
     flex-direction: column;
     align-items: flex-start;
+    width: 65%;
   }
 
-  .filter-controls .v-text-field {
+   .v-text-field {
     width: 100%;
   }
 

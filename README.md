@@ -1,57 +1,51 @@
-# base
+Aplicação de Gerenciamento de Pessoas
+Esta é uma aplicação de gerenciamento de pessoas desenvolvida usando Vue.js para o frontend e JSON Server para simular um servidor de backend. A aplicação permite adicionar, editar, excluir e filtrar informações sobre pessoas.
 
-## Project setup
+Pré-requisitos
+Antes de começar, certifique-se de que você tenha o Node.js e o npm (Node Package Manager) instalados em seu sistema. Você pode baixá-los em nodejs.org.
 
-```
-# yarn
-yarn
+Instalação
+Clone este repositório para o seu sistema:
 
-# npm
+bash
+Copy code
+git clone https://github.com/seu-usuario/seu-repositorio.git
+Navegue até o diretório do projeto:
+
+bash
+Copy code
+cd seu-repositorio
+Instale as dependências do projeto executando o seguinte comando:
+
+bash
+Copy code
 npm install
+Instale o JSON Server globalmente. Se você já o tiver instalado globalmente, pule para a próxima etapa:
 
-# pnpm
-pnpm install
-```
+bash
+Copy code
+npm install -g json-server
+Inicializando o Servidor
+Para iniciar o servidor JSON Server, execute o seguinte comando:
 
-### Compiles and hot-reloads for development
+bash
+Copy code
+json-server --watch data.json
+Isso irá simular um servidor de backend com base nos dados do arquivo data.json.
 
-```
-# yarn
-yarn dev
+Inicializando a Aplicação Frontend
+Com o servidor JSON em execução, abra um novo terminal na pasta do projeto.
 
-# npm
+Execute o seguinte comando para iniciar a aplicação frontend:
+
+bash
+Copy code
 npm run dev
+A aplicação frontend será executada na porta 3001.
 
-# pnpm
-pnpm dev
-```
+Utilização
+Abra um navegador da web e acesse http://localhost:3001.
 
-### Compiles and minifies for production
+Na página inicial, você verá um botão "Pessoas". Clique nele para acessar a aplicação de gerenciamento de pessoas.
 
-```
-# yarn
-yarn build
-
-# npm
-npm run build
-
-# pnpm
-pnpm build
-```
-
-### Lints and fixes files
-
-```
-# yarn
-yarn lint
-
-# npm
-npm run lint
-
-# pnpm
-pnpm lint
-```
-
-### Customize configuration
-
-See [Configuration Reference](https://vitejs.dev/config/).
+Você pode adicionar novas pessoas, editar informações existentes, excluir registros e filtrar dados usando os controles disponíveis na interface.
