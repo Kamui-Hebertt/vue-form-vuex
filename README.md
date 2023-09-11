@@ -69,4 +69,6 @@ Abra um navegador da web e acesse http://localhost:3001.
 
 Na página inicial, você verá um botão "Pessoas". Clique nele para acessar a aplicação de gerenciamento de pessoas.
 
+nota: Caso a página abra em branco na primeira vez, atualize a página.
+
 Você pode adicionar novas pessoas, editar informações existentes, excluir registros e filtrar dados usando os controles disponíveis na interface.

@@ -1,11 +1,11 @@
 <template>
 
-  <HelloWorld />
+  <HomePage />
 
 </template>
 
 <script setup>
-  import HelloWorld from '@/components/HomeComponent.vue'
+  import HomePage from '@/components/HomeComponent.vue'
 
 
 </script>

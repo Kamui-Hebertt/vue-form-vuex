@@ -20,8 +20,13 @@
     <v-dialog v-model="dialogAddData" max-width="400">
       <v-card>
         <v-card-title>Adicionar Detalhes</v-card-title>
-        <p v-if="isNotValidCpfState" class="error" >O CPF informado é inválido. Por favor, insira um CPF válido.</p>
-        <p v-if="isValidName" class="error" >O formato de Nome informado é inválido. Por favor, insira um Nome válido.</p>
+        <p v-if="isNotValidCpfState" class="error">
+          O CPF informado é inválido. Por favor, insira um CPF válido.
+        </p>
+        <p v-if="isValidName" class="error">
+          O formato de Nome informado é inválido. Por favor, insira um Nome
+          válido.
+        </p>
 
         <v-card-text>
           <v-text-field v-model="name" label="Nome"></v-text-field>
@@ -66,17 +71,17 @@
       </tbody>
     </table>
 
-
-
-
-
-
     <!-- Edit Data Dialog -->
     <v-dialog v-model="showEditForm" max-width="400">
       <v-card>
         <v-card-title>Editar Detalhes</v-card-title>
-        <p v-if="isNotValidCpfState" class="error" >O CPF informado é inválido. Por favor, insira um CPF válido.</p>
-        <p v-if="isValidName" class="error" >O formato de Nome informado é inválido. Por favor, insira um Nome válido.</p>
+        <p v-if="isNotValidCpfState" class="error">
+          O CPF informado é inválido. Por favor, insira um CPF válido.
+        </p>
+        <p v-if="isValidName" class="error">
+          O formato de Nome informado é inválido. Por favor, insira um Nome
+          válido.
+        </p>
         <v-card-text>
           <v-text-field v-model="editedItem.nome" label="Name"></v-text-field>
           <v-text-field v-model="editedItem.cpf" label="Cpf"></v-text-field>
@@ -92,10 +97,6 @@
       </v-card>
     </v-dialog>
 
-
-
-
-
     <!-- Confirmation Dialog -->
     <v-dialog v-model="dialogVisible" max-width="400">
       <v-card>
@@ -110,14 +111,11 @@
       </v-card>
     </v-dialog>
   </div>
-
-
-
 </template>
 
 <script>
 import { defineComponent, onMounted, ref, computed, watchEffect } from "vue";
-import { isValidCPF, validateName } from '../helpers/validations'
+import { isValidCPF, validateName } from "../helpers/validations";
 import peopleApi from "@/server/api";
 
 export default defineComponent({
@@ -153,65 +151,52 @@ export default defineComponent({
       }
     };
 
-
-
     // Add a new person
     const register = async () => {
+      try {
+        const newPerson = {
+          id: people.value.length + 1,
+          nome: name.value,
+          cpf: cpf.value,
+          dataNascimento: dataNascimento.value,
+        };
 
-  try {
-    const newPerson = {
-      id: people.value.length + 1,
-      nome: name.value,
-      cpf: cpf.value,
-      dataNascimento: dataNascimento.value,
+        if (validateName(newPerson.nome)) {
+          console.log(`${newPerson.nome} é um Nome válido.`);
+          isValidName.value = false;
+        } else {
+          console.log(`${newPerson.cpf} é um Nome inválido.`);
+          isValidName.value = true;
+          throw new Error("Nome Inválido");
+        }
+
+        if (isValidCPF(newPerson.cpf)) {
+          console.log(`${newPerson.cpf} é um CPF válido.`);
+          isNotValidCpfState.value = false;
+        } else {
+          console.log(`${newPerson.cpf} é um CPF inválido.`);
+          isNotValidCpfState.value = true;
+          throw new Error("Cpf Inválido");
+        }
+
+        const response = await peopleApi.post("/", newPerson);
+        console.log(response.status);
+
+        if (response.status === 201) {
+          people.value.push(newPerson);
+          closeAddDialog();
+          name.value = "";
+          cpf.value = "";
+          dataNascimento.value = "";
+        }
+      } catch (error) {
+        if (error.response.status === 404 || error.response.status === 500) {
+          window.alert("Desculpe, ocorreu um erro interno no servidor.");
+        }
+
+        console.error("Error adding person:", error);
+      }
     };
-
-
-    if(validateName(newPerson.nome)) {
-      console.log(`${newPerson.nome} é um Nome válido.`);
-      isValidName.value = false;
-    } else {
-      console.log(`${newPerson.cpf} é um Nome inválido.`);
-      isValidName.value = true;
-      throw new Error("Nome Inválido");
-    }
-
-
-    if (isValidCPF(newPerson.cpf)) {
-      console.log(`${newPerson.cpf} é um CPF válido.`);
-      isNotValidCpfState.value = false;
-    } else {
-      console.log(`${newPerson.cpf} é um CPF inválido.`);
-      isNotValidCpfState.value = true;
-      throw new Error("Cpf Inválido");
-    }
-
-
-    const response = await peopleApi.post("/", newPerson);
-    console.log(response.status);
-
-
-
-
-
-    if (response.status === 201) {
-      people.value.push(newPerson);
-      closeAddDialog();
-      name.value = "";
-      cpf.value = "";
-      dataNascimento.value = "";
-    }
-
-  } catch (error) {
-
-
-    if (error.response.status === 404 || error.response.status === 500) {
-      window.alert('Desculpe, ocorreu um erro interno no servidor.');
-    }
-
-    console.error("Error adding person:", error);
-  }
-};
 
     // Open the add data dialog
     const openAddDialog = () => {
@@ -228,35 +213,32 @@ export default defineComponent({
     // Edit a person
     const editItem = (index) => {
       editedItem.value = { ...people.value[index] };
-      isNotValidCpfState.value = null;  // reset error message to null
+      isNotValidCpfState.value = null; // reset error message to null
       showEditForm.value = true;
       isValidName.value = null;
-
     };
 
     // Update a person
     const updateItem = async () => {
-
-      if(validateName(editedItem.value.nome)) {
-      console.log(`${editedItem.value.nome} é um Nome válido.`);
-      isValidName.value = false;
-    } else {
-      console.log(`${editedItem.value.nome} é um Nome inválido.`);
-      isValidName.value = true;
-      throw new Error("Nome Inválido");
-    }
-
+      if (validateName(editedItem.value.nome)) {
+        console.log(`${editedItem.value.nome} é um Nome válido.`);
+        isValidName.value = false;
+      } else {
+        console.log(`${editedItem.value.nome} é um Nome inválido.`);
+        isValidName.value = true;
+        throw new Error("Nome Inválido");
+      }
 
       if (isValidCPF(editedItem.value.cpf)) {
-          isNotValidCpfState.value = false;
-          console.log(`${editedItem.value.cpf} é um CPF válido.`);
-        } else {
-          console.log(`${editedItem.value.cpf} é um CPF inválido.`);
-          console.log(isNotValidCpfState.value)
-           isNotValidCpfState.value = true;
-           console.log(isNotValidCpfState.value)
-          throw new Error("Cpf Inválido");
-        }
+        isNotValidCpfState.value = false;
+        console.log(`${editedItem.value.cpf} é um CPF válido.`);
+      } else {
+        console.log(`${editedItem.value.cpf} é um CPF inválido.`);
+        console.log(isNotValidCpfState.value);
+        isNotValidCpfState.value = true;
+        console.log(isNotValidCpfState.value);
+        throw new Error("Cpf Inválido");
+      }
       try {
         const response = await peopleApi.put(
           `/${editedItem.value.id}`,
@@ -276,14 +258,10 @@ export default defineComponent({
 
         fetchPeople();
       } catch (error) {
-
-
-
         if (error.response.status === 404 || error.response.status === 500) {
-      window.alert('Desculpe, ocorreu um erro interno no servidor.');
-    }
+          window.alert("Desculpe, ocorreu um erro interno no servidor.");
+        }
         console.error("Error updating person:", error);
-
       }
     };
 
@@ -323,13 +301,11 @@ export default defineComponent({
           itemToDeleteId.value = null;
           dialogVisible.value = false;
         } catch (error) {
-
           if (error.response.status === 404 || error.response.status === 500) {
-      window.alert('Desculpe, ocorreu um erro interno no servidor.');
-    }
+            window.alert("Desculpe, ocorreu um erro interno no servidor.");
+          }
 
           console.error("Error deleting person:", error);
-
         }
       }
     };
@@ -358,53 +334,46 @@ export default defineComponent({
       return filtered;
     });
 
-    const applyFilters = () => {
-
-    };
+    const applyFilters = () => {};
 
     watchEffect(() => {
       // cpf mask
-  let cpfToFormat = cpf.value || editedItem.value.cpf; // it'll use cpf.value if available, otherwise use editedItem.cpf
+      let cpfToFormat = cpf.value || editedItem.value.cpf; // it'll use cpf.value if available, otherwise use editedItem.cpf
 
-  if (cpfToFormat) {
-    const cleanedCpf = cpfToFormat.replace(/\D/g, "");
-    const formattedCpf = `${cleanedCpf.slice(0, 3)}.${cleanedCpf.slice(3, 6)}.${cleanedCpf.slice(6, 9)}-${cleanedCpf.slice(9, 11)}`;
+      if (cpfToFormat) {
+        const cleanedCpf = cpfToFormat.replace(/\D/g, "");
+        const formattedCpf = `${cleanedCpf.slice(0, 3)}.${cleanedCpf.slice(
+          3,
+          6
+        )}.${cleanedCpf.slice(6, 9)}-${cleanedCpf.slice(9, 11)}`;
 
-    if (cpf.value) {
-      cpf.value = formattedCpf;
-    } else {
-      editedItem.value.cpf = formattedCpf;
-    }
-  }
+        if (cpf.value) {
+          cpf.value = formattedCpf;
+        } else {
+          editedItem.value.cpf = formattedCpf;
+        }
+      }
+    });
 
+    //date mask
+    watchEffect(() => {
+      let dateToFormat =
+        dataNascimento.value || editedItem.value.dataNascimento;
 
+      if (dateToFormat) {
+        const cleanedDate = dateToFormat.replace(/\D/g, "");
+        const formattedDate = `${cleanedDate.slice(0, 2)}/${cleanedDate.slice(
+          2,
+          4
+        )}/${cleanedDate.slice(4, 8)}`;
 
-
-
-
-
-
-});
-
-//date mask
-watchEffect(() => {
-  let dateToFormat = dataNascimento.value || editedItem.value.dataNascimento;
-
-  if (dateToFormat) {
-    const cleanedDate = dateToFormat.replace(/\D/g, "");
-    const formattedDate = `${cleanedDate.slice(0, 2)}/${cleanedDate.slice(2, 4)}/${cleanedDate.slice(4, 8)}`;
-
-    if (dataNascimento.value) {
-      dataNascimento.value = formattedDate;
-    } else {
-      editedItem.value.dataNascimento = formattedDate;
-    }
-  }
-});
-
-
-
-
+        if (dataNascimento.value) {
+          dataNascimento.value = formattedDate;
+        } else {
+          editedItem.value.dataNascimento = formattedDate;
+        }
+      }
+    });
 
     // Fetch data on component mount
     onMounted(fetchPeople);
@@ -494,7 +463,7 @@ watchEffect(() => {
   padding: 10px;
 }
 
-.error{
+.error {
   color: $redError;
   margin-left: 1rem;
 }
@@ -529,7 +498,7 @@ watchEffect(() => {
     width: 65%;
   }
 
-   .v-text-field {
+  .v-text-field {
     width: 100%;
   }
 
@@ -543,11 +512,5 @@ watchEffect(() => {
     display: flex;
     flex-direction: column;
   }
-
-
-
-
-
-
 }
 </style>

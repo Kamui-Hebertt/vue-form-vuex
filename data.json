@@ -23,6 +23,12 @@
       "nome": "dasdas",
       "cpf": "173.626.717-50",
       "dataNascimento": "12/12/2023"
+    },
+    {
+      "id": 5,
+      "nome": "fsdfsdf",
+      "cpf": "173.626.717-50",
+      "dataNascimento": "12/22/32"
     }
   ],
   "produtos": [
