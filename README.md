@@ -14,10 +14,12 @@ git clone git@github.com:Kamui-Hebertt/vue-form-vuex.git
 ```
 Navegue até o diretório do projeto:
 
+exemplo:
+
 ```bash
 
 cd seu-repositorio
-```bash
+```
 Instale as dependências do projeto executando o seguinte comando:
 
 ```bash
