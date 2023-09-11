@@ -2,33 +2,21 @@
   "pessoas": [
     {
       "id": 1,
-      "nome": "dsada",
+      "nome": "cliente 1",
+      "cpf": "000.000.000-00",
+      "dataNascimento": "1999-12-31"
+    },
+    {
+      "id": 2,
+      "nome": "hesdds",
       "cpf": "173.626.717-50",
       "dataNascimento": ""
     },
     {
-      "id": 2,
-      "nome": "asdasda",
+      "id": 3,
+      "nome": "dsada",
       "cpf": "173.626.717-50",
-      "dataNascimento": "dsadsad"
-    },
-    {
-      "id": 4,
-      "nome": "dasdadadasdsa",
-      "cpf": "173.626.717-50",
-      "dataNascimento": "dasd"
-    },
-    {
-      "id": 5,
-      "nome": "dasd",
-      "cpf": "173.626.717-50",
-      "dataNascimento": "aaaaaaaaaaaa"
-    },
-    {
-      "id": 6,
-      "nome": "sdfsdfsf",
-      "cpf": "173.626.717-50",
-      "dataNascimento": "dasd"
+      "dataNascimento": "adsdasdas"
     }
   ],
   "produtos": [

@@ -40,6 +40,19 @@ json-server --watch data.json
 ```
 Isso irá simular um servidor de backend com base nos dados do arquivo data.json.
 
+
+## Nota: Em caso de erro de servidor ao adicionar dados, considere a possibilidade de que o arquivo JSON (data.json) possa estar corrompido. Se você encontrar esse problema, siga estas etapas:
+
+Baixe novamente o arquivo data.json.
+
+Substitua o arquivo JSON existente na pasta principal do projeto pelo arquivo recém-baixado.
+
+Execute o comando a seguir para reiniciar o servidor JSON com o novo arquivo:
+ 
+```bash
+json-server --watch data.json
+```
+
 ## Inicializando a Aplicação Frontend
 Com o servidor JSON em execução, abra um novo terminal na pasta do projeto.
 

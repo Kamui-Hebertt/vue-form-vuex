@@ -16,7 +16,6 @@
     <v-btn @click="openAddDialog" class="mb-2 tableBtn"
       >Adicionar Usuário</v-btn
     >
-    <!-- serverError -->
     <!-- Add Data Dialog -->
     <v-dialog v-model="dialogAddData" max-width="400">
       <v-card>
