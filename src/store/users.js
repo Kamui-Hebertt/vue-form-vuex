@@ -1,11 +1,11 @@
 import axios from 'axios';
-import personApi from '@/server/api'; // Import 'personApi'
+import personApi from '@/server/api';
 
-axios.defaults.baseURL = process.env.VUE_APP_API_URL; // Set the base URL for axios
+axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
 const Store = {
   state: {
-    people: [], // Initialize an empty array for people
+    people: [],
   },
   mutations: {
     setPeople(state, people) {
@@ -21,30 +21,30 @@ const Store = {
   actions: {
     async fetchPeople({ commit }) {
       try {
-        const response = await personApi.get('/'); // Use 'personApi' for API requests
+        const response = await personApi.get('/'); 
         commit('setPeople', response.data);
       } catch (error) {
         console.error('Error fetching people:', error);
-        // Handle the error gracefully, e.g., show an error message to the user
+
       }
     },
     async addPerson({ commit }, newPerson) {
       try {
-        const response = await personApi.post('/', newPerson); // Use 'personApi' for API requests
-        newPerson.id = response.data.id; // Use the ID returned from the server
+        const response = await personApi.post('/', newPerson);
+        newPerson.id = response.data.id;
         commit('addPerson', newPerson);
       } catch (error) {
         console.error('Error adding person:', error);
-        // Handle the error gracefully, e.g., show an error message to the user
+
       }
     },
     async removePerson({ commit }, personId) {
       try {
-        await personApi.delete(`/${personId}`); // Use 'personApi' for API requests
+        await personApi.delete(`/${personId}`);
         commit('removePerson', personId);
       } catch (error) {
         console.error('Error removing person:', error);
-        // Handle the error gracefully, e.g., show an error message to the user
+
       }
     },
   },
@@ -55,4 +55,4 @@ const Store = {
   },
 };
 
-export default Store; // Export the store object as default
+export default Store;

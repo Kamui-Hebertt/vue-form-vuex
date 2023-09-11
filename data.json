@@ -17,6 +17,12 @@
       "nome": "dsada",
       "cpf": "173.626.717-50",
       "dataNascimento": "adsdasdas"
+    },
+    {
+      "id": 4,
+      "nome": "hebertt",
+      "cpf": "173.626.717-50",
+      "dataNascimento": "dasdsad"
     }
   ],
   "produtos": [
