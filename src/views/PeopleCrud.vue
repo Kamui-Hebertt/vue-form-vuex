@@ -16,12 +16,13 @@
     <v-btn @click="openAddDialog" class="mb-2 tableBtn"
       >Adicionar Usuário</v-btn
     >
-
+    <!-- serverError -->
     <!-- Add Data Dialog -->
     <v-dialog v-model="dialogAddData" max-width="400">
       <v-card>
         <v-card-title>Adicionar Detalhes</v-card-title>
         <p v-if="isNotValidCpfState" class="error" >O CPF informado é inválido. Por favor, insira um CPF válido.</p>
+        <p v-if="isValidName" class="error" >O formato de Nome informado é inválido. Por favor, insira um Nome válido.</p>
 
         <v-card-text>
           <v-text-field v-model="name" label="Nome"></v-text-field>
@@ -76,6 +77,7 @@
       <v-card>
         <v-card-title>Editar Detalhes</v-card-title>
         <p v-if="isNotValidCpfState" class="error" >O CPF informado é inválido. Por favor, insira um CPF válido.</p>
+        <p v-if="isValidName" class="error" >O formato de Nome informado é inválido. Por favor, insira um Nome válido.</p>
         <v-card-text>
           <v-text-field v-model="editedItem.nome" label="Name"></v-text-field>
           <v-text-field v-model="editedItem.cpf" label="Cpf"></v-text-field>
@@ -109,11 +111,14 @@
       </v-card>
     </v-dialog>
   </div>
+
+
+
 </template>
 
 <script>
 import { defineComponent, onMounted, ref, computed, watchEffect } from "vue";
-import { isValidCPF } from '../helpers/validations'
+import { isValidCPF, validateName } from '../helpers/validations'
 import peopleApi from "@/server/api";
 
 export default defineComponent({
@@ -121,6 +126,8 @@ export default defineComponent({
 
   setup() {
     // Data
+    const serverError = ref(null);
+    const isValidName = ref(null);
     const isNotValidCpfState = ref(null);
     const people = ref([]);
     const dialogAddData = ref(false);
@@ -151,6 +158,7 @@ export default defineComponent({
 
     // Add a new person
     const register = async () => {
+
   try {
     const newPerson = {
       id: people.value.length + 1,
@@ -158,6 +166,17 @@ export default defineComponent({
       cpf: cpf.value,
       dataNascimento: dataNascimento.value,
     };
+
+
+    if(validateName(newPerson.nome)) {
+      console.log(`${newPerson.nome} é um Nome válido.`);
+      isValidName.value = false;
+    } else {
+      console.log(`${newPerson.cpf} é um Nome inválido.`);
+      isValidName.value = true;
+      throw new Error("Nome Inválido");
+    }
+
 
     if (isValidCPF(newPerson.cpf)) {
       console.log(`${newPerson.cpf} é um CPF válido.`);
@@ -168,13 +187,13 @@ export default defineComponent({
       throw new Error("Cpf Inválido");
     }
 
-    if (isNotValidCpfState.value) {
-      // Don't proceed with the API request if CPF is invalid
-      return;
-    }
 
     const response = await peopleApi.post("/", newPerson);
-    console.log(newPerson);
+    console.log(response.status);
+
+
+
+
 
     if (response.status === 201) {
       people.value.push(newPerson);
@@ -183,7 +202,14 @@ export default defineComponent({
       cpf.value = "";
       dataNascimento.value = "";
     }
+
   } catch (error) {
+
+
+    if (error.response.status === 404 || error.response.status === 500) {
+      window.alert('Desculpe, ocorreu um erro interno no servidor.');
+    }
+
     console.error("Error adding person:", error);
   }
 };
@@ -192,6 +218,7 @@ export default defineComponent({
     const openAddDialog = () => {
       dialogAddData.value = true;
       isNotValidCpfState.value = null;
+      isValidName.value = null;
     };
 
     // Close the add data dialog
@@ -204,11 +231,22 @@ export default defineComponent({
       editedItem.value = { ...people.value[index] };
       isNotValidCpfState.value = null;  // reset error message to null
       showEditForm.value = true;
+      isValidName.value = null;
 
     };
 
     // Update a person
     const updateItem = async () => {
+
+      if(validateName(editedItem.value.nome)) {
+      console.log(`${editedItem.value.nome} é um Nome válido.`);
+      isValidName.value = false;
+    } else {
+      console.log(`${editedItem.value.nome} é um Nome inválido.`);
+      isValidName.value = true;
+      throw new Error("Nome Inválido");
+    }
+
 
       if (isValidCPF(editedItem.value.cpf)) {
           isNotValidCpfState.value = false;
@@ -239,7 +277,14 @@ export default defineComponent({
 
         fetchPeople();
       } catch (error) {
+
+
+
+        if (error.response.status === 404 || error.response.status === 500) {
+      window.alert('Desculpe, ocorreu um erro interno no servidor.');
+    }
         console.error("Error updating person:", error);
+
       }
     };
 
@@ -262,6 +307,7 @@ export default defineComponent({
 
     // Execute the delete action
     const executeAction = async () => {
+      serverError.value = false;
       if (itemToDeleteId.value !== null) {
         try {
           const response = await peopleApi.delete(`/${itemToDeleteId.value}`);
@@ -278,7 +324,13 @@ export default defineComponent({
           itemToDeleteId.value = null;
           dialogVisible.value = false;
         } catch (error) {
+
+          if (error.response.status === 404 || error.response.status === 500) {
+      window.alert('Desculpe, ocorreu um erro interno no servidor.');
+    }
+
           console.error("Error deleting person:", error);
+
         }
       }
     };
@@ -354,6 +406,7 @@ export default defineComponent({
       executeAction,
       applyFilters,
       isNotValidCpfState,
+      isValidName,
     };
   },
 });
@@ -462,6 +515,10 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
   }
+
+
+
+
 
 
 }

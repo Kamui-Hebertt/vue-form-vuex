@@ -37,3 +37,18 @@ export function isValidCPF(cpf) {
 
 
 
+export const validateName = (name) => {
+  if (!name) {
+    return false;
+  }
+
+  if (name.length <= 1) {
+    return false
+  }
+
+
+  if (/^\d+$/.test(name)) {
+    return false
+  }
+  return true;
+};
