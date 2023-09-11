@@ -21,6 +21,8 @@
     <v-dialog v-model="dialogAddData" max-width="400">
       <v-card>
         <v-card-title>Adicionar Detalhes</v-card-title>
+        <p v-if="isNotValidCpfState" class="error" >O CPF informado é inválido. Por favor, insira um CPF válido.</p>
+
         <v-card-text>
           <v-text-field v-model="name" label="Nome"></v-text-field>
           <v-text-field v-model="cpf" label="Cpf" maxlength="14"></v-text-field>
@@ -64,10 +66,16 @@
       </tbody>
     </table>
 
+
+
+
+
+
     <!-- Edit Data Dialog -->
     <v-dialog v-model="showEditForm" max-width="400">
       <v-card>
         <v-card-title>Editar Detalhes</v-card-title>
+        <p v-if="isNotValidCpfState" class="error" >O CPF informado é inválido. Por favor, insira um CPF válido.</p>
         <v-card-text>
           <v-text-field v-model="editedItem.nome" label="Name"></v-text-field>
           <v-text-field v-model="editedItem.cpf" label="Cpf"></v-text-field>
@@ -82,6 +90,10 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+
+
+
 
     <!-- Confirmation Dialog -->
     <v-dialog v-model="dialogVisible" max-width="400">
@@ -101,7 +113,7 @@
 
 <script>
 import { defineComponent, onMounted, ref, computed, watchEffect } from "vue";
-
+import { isValidCPF } from '../helpers/validations'
 import peopleApi from "@/server/api";
 
 export default defineComponent({
@@ -109,6 +121,7 @@ export default defineComponent({
 
   setup() {
     // Data
+    const isNotValidCpfState = ref(null);
     const people = ref([]);
     const dialogAddData = ref(false);
     const showEditForm = ref(false);
@@ -134,76 +147,51 @@ export default defineComponent({
       }
     };
 
-    function isValidCPF(cpf) {
-      cpf = cpf.replace(/[^\d]+/g, "");
 
-      if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
-
-      let sum = 0;
-      let remainder;
-
-      for (let i = 1; i <= 9; i++) {
-        sum += parseInt(cpf.substring(i - 1, i)) * (11 - i);
-      }
-
-      remainder = (sum * 10) % 11;
-
-      if (remainder === 10 || remainder === 11) {
-        remainder = 0;
-      }
-
-      if (remainder !== parseInt(cpf.substring(9, 10))) return false;
-
-      sum = 0;
-      for (let i = 1; i <= 10; i++) {
-        sum += parseInt(cpf.substring(i - 1, i)) * (12 - i);
-      }
-
-      remainder = (sum * 10) % 11;
-
-      if (remainder === 10 || remainder === 11) {
-        remainder = 0;
-      }
-
-      if (remainder !== parseInt(cpf.substring(10, 11))) return false;
-
-      return true;
-    }
 
     // Add a new person
     const register = async () => {
-      try {
-        const newPerson = {
-          id: people.value.length + 1,
-          nome: name.value,
-          cpf: cpf.value,
-          dataNascimento: dataNascimento.value,
-        };
-
-        if (isValidCPF(newPerson.cpf)) {
-          console.log(`${newPerson.cpf} é um CPF válido.`);
-        } else {
-          console.log(`${newPerson.cpf} é um CPF inválido.`);
-        }
-
-        const response = await peopleApi.post("/", newPerson);
-        console.log(newPerson);
-
-        if (response.status === 201) {
-          people.value.push(newPerson);
-          closeAddDialog();
-          name.value = "";
-          cpf.value = "";
-          dataNascimento.value = "";
-        }
-      } catch (error) {
-        console.error("Error adding person:", error);
-      }
+  try {
+    const newPerson = {
+      id: people.value.length + 1,
+      nome: name.value,
+      cpf: cpf.value,
+      dataNascimento: dataNascimento.value,
     };
+
+    if (isValidCPF(newPerson.cpf)) {
+      console.log(`${newPerson.cpf} é um CPF válido.`);
+      isNotValidCpfState.value = false;
+    } else {
+      console.log(`${newPerson.cpf} é um CPF inválido.`);
+      isNotValidCpfState.value = true;
+      throw new Error("Cpf Inválido");
+    }
+
+    if (isNotValidCpfState.value) {
+      // Don't proceed with the API request if CPF is invalid
+      return;
+    }
+
+    const response = await peopleApi.post("/", newPerson);
+    console.log(newPerson);
+
+    if (response.status === 201) {
+      people.value.push(newPerson);
+      closeAddDialog();
+      name.value = "";
+      cpf.value = "";
+      dataNascimento.value = "";
+    }
+  } catch (error) {
+    console.error("Error adding person:", error);
+  }
+};
 
     // Open the add data dialog
     const openAddDialog = () => {
       dialogAddData.value = true;
+      isNotValidCpfState.value = null;
     };
 
     // Close the add data dialog
@@ -214,11 +202,24 @@ export default defineComponent({
     // Edit a person
     const editItem = (index) => {
       editedItem.value = { ...people.value[index] };
+      isNotValidCpfState.value = null;  // reset error message to null
       showEditForm.value = true;
+
     };
 
     // Update a person
     const updateItem = async () => {
+
+      if (isValidCPF(editedItem.value.cpf)) {
+          isNotValidCpfState.value = false;
+          console.log(`${editedItem.value.cpf} é um CPF válido.`);
+        } else {
+          console.log(`${editedItem.value.cpf} é um CPF inválido.`);
+          console.log(isNotValidCpfState.value)
+           isNotValidCpfState.value = true;
+           console.log(isNotValidCpfState.value)
+          throw new Error("Cpf Inválido");
+        }
       try {
         const response = await peopleApi.put(
           `/${editedItem.value.id}`,
@@ -311,15 +312,20 @@ export default defineComponent({
       // Update the filteredPeople computed property
     };
     watchEffect(() => {
-      const cleanedCpf = cpf.value.replace(/\D/g, "");
+      // cpf mask
+  let cpfToFormat = cpf.value || editedItem.value.cpf; // it'll use cpf.value if available, otherwise use editedItem.cpf
 
-      const formattedCpf = `${cleanedCpf.slice(0, 3)}.${cleanedCpf.slice(
-        3,
-        6
-      )}.${cleanedCpf.slice(6, 9)}-${cleanedCpf.slice(9, 11)}`;
+  if (cpfToFormat) {
+    const cleanedCpf = cpfToFormat.replace(/\D/g, "");
+    const formattedCpf = `${cleanedCpf.slice(0, 3)}.${cleanedCpf.slice(3, 6)}.${cleanedCpf.slice(6, 9)}-${cleanedCpf.slice(9, 11)}`;
 
+    if (cpf.value) {
       cpf.value = formattedCpf;
-    });
+    } else {
+      editedItem.value.cpf = formattedCpf;
+    }
+  }
+});
 
     // Fetch data on component mount
     onMounted(fetchPeople);
@@ -347,6 +353,7 @@ export default defineComponent({
       cancelAction,
       executeAction,
       applyFilters,
+      isNotValidCpfState,
     };
   },
 });
@@ -407,6 +414,9 @@ export default defineComponent({
   padding: 10px;
 }
 
+.error{
+  color: $redError;
+}
 .data-table td {
   border-bottom: 1px solid #ddd;
   padding: 10px;
@@ -451,5 +461,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
   }
+
+
 }
 </style>
