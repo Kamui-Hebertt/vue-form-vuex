@@ -416,6 +416,7 @@ export default defineComponent({
 
 .error{
   color: $redError;
+  margin-left: 1rem;
 }
 .data-table td {
   border-bottom: 1px solid #ddd;
