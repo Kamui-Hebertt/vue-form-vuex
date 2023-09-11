@@ -2,7 +2,7 @@ import axios from 'axios';
 import personApi from '@/server/api';
 
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
-
+ // NOT using 
 const Store = {
   state: {
     people: [],
@@ -21,7 +21,7 @@ const Store = {
   actions: {
     async fetchPeople({ commit }) {
       try {
-        const response = await personApi.get('/'); 
+        const response = await personApi.get('/');
         commit('setPeople', response.data);
       } catch (error) {
         console.error('Error fetching people:', error);

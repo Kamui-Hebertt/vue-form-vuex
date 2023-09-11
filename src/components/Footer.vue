@@ -14,7 +14,7 @@
   background-color: $backgroundBlack;
   color: $TextColor;
 
-  border:1px solid white;
+  border:1px solid $TextColor;
 }
 
 .text-center {

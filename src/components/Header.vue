@@ -10,7 +10,7 @@
 
     <v-toolbar-items>
       <v-btn to="/people" class="white--text">Pessoas</v-btn>
-     
+
     </v-toolbar-items>
   </v-app-bar>
 </template>
@@ -18,7 +18,7 @@
 <style lang="scss" scoped>
 @import "../scss/app.scss";
 .v-app-bar {
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: $borderShadow;
 }
 
 .v-btn {

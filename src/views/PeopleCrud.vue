@@ -359,9 +359,9 @@ export default defineComponent({
     });
 
     const applyFilters = () => {
-      // Triggered when the filter fields change
-      // Update the filteredPeople computed property
+
     };
+
     watchEffect(() => {
       // cpf mask
   let cpfToFormat = cpf.value || editedItem.value.cpf; // it'll use cpf.value if available, otherwise use editedItem.cpf
@@ -376,7 +376,35 @@ export default defineComponent({
       editedItem.value.cpf = formattedCpf;
     }
   }
+
+
+
+
+
+
+
+
 });
+
+//date mask
+watchEffect(() => {
+  let dateToFormat = dataNascimento.value || editedItem.value.dataNascimento;
+
+  if (dateToFormat) {
+    const cleanedDate = dateToFormat.replace(/\D/g, "");
+    const formattedDate = `${cleanedDate.slice(0, 2)}/${cleanedDate.slice(2, 4)}/${cleanedDate.slice(4, 8)}`;
+
+    if (dataNascimento.value) {
+      dataNascimento.value = formattedDate;
+    } else {
+      editedItem.value.dataNascimento = formattedDate;
+    }
+  }
+});
+
+
+
+
 
     // Fetch data on component mount
     onMounted(fetchPeople);

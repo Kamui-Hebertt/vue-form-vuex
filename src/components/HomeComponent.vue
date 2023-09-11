@@ -30,7 +30,7 @@
 
 
 .btn {
-  margin-top: 3rem;
+  margin-top: 2rem;
   size: "x-large";
   background-color: $backgroundBlack;
   color: $TextColor;
@@ -41,11 +41,6 @@
   }
 }
 
-.col-btns {
-
-
-
-}
 
 
 </style>

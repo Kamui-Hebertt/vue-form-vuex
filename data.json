@@ -10,19 +10,19 @@
       "id": 2,
       "nome": "hesdds",
       "cpf": "173.626.717-50",
-      "dataNascimento": ""
+      "dataNascimento": "12/12/01"
     },
     {
       "id": 3,
       "nome": "dsada",
       "cpf": "173.626.717-50",
-      "dataNascimento": "adsdasdas"
+      "dataNascimento": "12/21/2000"
     },
     {
       "id": 4,
-      "nome": "hebertt",
+      "nome": "dasdas",
       "cpf": "173.626.717-50",
-      "dataNascimento": "dasdsad"
+      "dataNascimento": "12/12/2023"
     }
   ],
   "produtos": [
